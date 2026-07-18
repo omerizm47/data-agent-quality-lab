@@ -36,7 +36,29 @@ evaluation module (preview). Follows the [Fabric Jumpstart](https://jumpstart.fa
 - `aql_regressions` — accuracy drops vs the previous run (threshold-based)
 - `aql_recommendations` — what to fix: diagnosis (`wrong_query`, `summarization_mismatch`, `no_data_returned`, `agent_error`, `regression_detected`, `high_latency`, `unclear_verdict`) + actionable advice per agent/run. Written automatically by 02 on failures/regressions (pointers) and in depth by 03
 
-## Quick start
+## Quick start (from a Fabric notebook — no local tools)
+
+Open any notebook in the Fabric workspace where you want the lab installed and run:
+
+```python
+import requests
+exec(requests.get(
+    "https://api.github.com/repos/omerizm47/data-agent-quality-lab/contents/scripts/fabric_install.py",
+    headers={"Accept": "application/vnd.github.raw"}).text)
+
+install()                                             # lakehouse + notebooks + model + pipeline + report
+register_agents([{"name": "MyAgent", "workspace": "other-ws", "bank": "default"}])
+run_evaluation()                                      # baseline run
+```
+
+- `install()` targets the notebook's own workspace and creates the `agent_quality_lab_lh` lakehouse if missing. It's idempotent.
+- While this repo is private, add `"Authorization": "Bearer <github-PAT>"` to the fetch headers and pass `github_token="<github-PAT>"` to `install()`.
+- Prefer declarative? Put your agents/banks in a YAML file (see [config.example.yaml](config.example.yaml)) and call `install(config="/lakehouse/default/Files/aql_config.yaml")`.
+- Add your own question banks by uploading `*.csv` (columns: `question,expected_answer[,category,tags]`) to `Files/ground_truth/` and re-running `01_register_agents`.
+
+Then open the `agent_quality_scorecard` report and enable the daily trigger on `daily_agent_evaluation`. When something regresses, the pipeline run fails and page 2 ("What to fix") points you at `03_analyze_failures` with the right `RUN_ID`.
+
+## Quick start (from your machine, PowerShell)
 
 1. Create a workspace (assigned to a paid F capacity) and a lakehouse in it; grab both GUIDs from the portal URL.
 2. Sign in with Azure CLI and deploy all items (idempotent — safe to re-run after edits):

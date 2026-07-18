@@ -1,0 +1,18 @@
+# Data Agent Quality Lab — declarative install config.
+# Pass to install(config="...") in a Fabric notebook, e.g.:
+#   install(config="/lakehouse/default/Files/aql_config.yaml")
+# Everything below is optional; omitted keys fall back to defaults.
+
+lakehouse: agent_quality_lab_lh   # created if it doesn't exist
+# workspace_id: <guid>            # defaults to the notebook's current workspace
+
+auto_discover: true               # register data agents found in this workspace
+
+agents:                           # agents in OTHER workspaces (name + workspace required)
+  - name: MediaOntologyAgent
+    workspace: fabric-demo-media
+    bank: media_bank
+  # - name: FinServDirectAgent
+  #   workspace: finserv-ws       # bank defaults to "default"
+
+run_baseline: false               # true = run 02_run_evaluation right after install
