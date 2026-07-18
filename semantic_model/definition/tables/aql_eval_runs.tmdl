@@ -1,0 +1,79 @@
+table aql_eval_runs
+
+	measure 'Eval Runs' = COUNTROWS(aql_eval_runs)
+		formatString: #,0
+
+	measure 'Failed Runs' = CALCULATE(COUNTROWS(aql_eval_runs), aql_eval_runs[status] = "failed")
+		formatString: #,0
+
+	measure 'Avg Run Duration (s)' = AVERAGE(aql_eval_runs[duration_s])
+		formatString: 0.0
+
+	column run_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: run_id
+
+	column agent_name
+		dataType: string
+		summarizeBy: none
+		sourceColumn: agent_name
+
+	column workspace_name
+		dataType: string
+		summarizeBy: none
+		sourceColumn: workspace_name
+
+	column stage
+		dataType: string
+		summarizeBy: none
+		sourceColumn: stage
+
+	column bank_name
+		dataType: string
+		summarizeBy: none
+		sourceColumn: bank_name
+
+	column question_count
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: question_count
+
+	column started_at
+		dataType: dateTime
+		formatString: yyyy-mm-dd hh:nn:ss
+		summarizeBy: none
+		sourceColumn: started_at
+
+	column finished_at
+		dataType: dateTime
+		formatString: yyyy-mm-dd hh:nn:ss
+		summarizeBy: none
+		sourceColumn: finished_at
+
+	column duration_s
+		dataType: double
+		summarizeBy: none
+		sourceColumn: duration_s
+
+	column status
+		dataType: string
+		summarizeBy: none
+		sourceColumn: status
+
+	column error
+		dataType: string
+		summarizeBy: none
+		sourceColumn: error
+
+	column sdk_version
+		dataType: string
+		summarizeBy: none
+		sourceColumn: sdk_version
+
+	partition aql_eval_runs = entity
+		mode: directLake
+		source
+			entityName: aql_eval_runs
+			expressionSource: 'DirectLake - AgentQualityLab'
+

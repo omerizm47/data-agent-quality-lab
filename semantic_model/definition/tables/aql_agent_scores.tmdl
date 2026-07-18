@@ -1,0 +1,107 @@
+table aql_agent_scores
+
+	measure 'Questions Evaluated' = SUM(aql_agent_scores[n_questions])
+		formatString: #,0
+
+	measure 'Correct Answers' = SUM(aql_agent_scores[n_true])
+		formatString: #,0
+
+	measure 'Accuracy %' = DIVIDE(SUM(aql_agent_scores[n_true]), SUM(aql_agent_scores[n_questions]))
+		formatString: 0.0%
+
+	measure 'Unclear Rate %' = DIVIDE(SUM(aql_agent_scores[n_unclear]), SUM(aql_agent_scores[n_questions]))
+		formatString: 0.0%
+
+	measure 'Avg Latency (s)' = AVERAGE(aql_agent_scores[avg_latency_s])
+		formatString: 0.0
+
+	measure 'Agents Evaluated' = DISTINCTCOUNT(aql_agent_scores[agent_name])
+		formatString: #,0
+
+	measure 'Latest Accuracy %' = ```
+			VAR _latest = CALCULATE(MAX(aql_agent_scores[eval_date]), ALLSELECTED(aql_agent_scores[eval_date]))
+			RETURN CALCULATE([Accuracy %], aql_agent_scores[eval_date] = _latest)
+			```
+		formatString: 0.0%
+
+	measure 'Accuracy Change vs Previous' = ```
+			VAR _latest = CALCULATE(MAX(aql_agent_scores[eval_date]), ALLSELECTED(aql_agent_scores[eval_date]))
+			VAR _prev = CALCULATE(MAX(aql_agent_scores[eval_date]), aql_agent_scores[eval_date] < _latest, ALLSELECTED(aql_agent_scores[eval_date]))
+			VAR _accLatest = CALCULATE([Accuracy %], aql_agent_scores[eval_date] = _latest)
+			VAR _accPrev = CALCULATE([Accuracy %], aql_agent_scores[eval_date] = _prev)
+			RETURN IF(NOT ISBLANK(_accPrev), _accLatest - _accPrev)
+			```
+		formatString: +0.0%;-0.0%;0.0%
+
+	column eval_date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: eval_date
+
+	column agent_name
+		dataType: string
+		summarizeBy: none
+		sourceColumn: agent_name
+
+	column workspace_name
+		dataType: string
+		summarizeBy: none
+		sourceColumn: workspace_name
+
+	column bank_name
+		dataType: string
+		summarizeBy: none
+		sourceColumn: bank_name
+
+	column stage
+		dataType: string
+		summarizeBy: none
+		sourceColumn: stage
+
+	column evaluation_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: evaluation_id
+
+	column n_questions
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: n_questions
+
+	column n_true
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: n_true
+
+	column n_false
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: n_false
+
+	column n_unclear
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: n_unclear
+
+	column avg_latency_s
+		dataType: double
+		summarizeBy: none
+		sourceColumn: avg_latency_s
+
+	column agent_version
+		dataType: string
+		summarizeBy: none
+		sourceColumn: agent_version
+
+	column accuracy
+		dataType: double
+		summarizeBy: none
+		sourceColumn: accuracy
+
+	partition aql_agent_scores = entity
+		mode: directLake
+		source
+			entityName: aql_agent_scores
+			expressionSource: 'DirectLake - AgentQualityLab'
+

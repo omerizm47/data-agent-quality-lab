@@ -1,0 +1,23 @@
+{
+    "properties": {
+        "description": "Daily data agent regression evaluation - runs 02_run_evaluation (which also refreshes the quality model)",
+        "activities": [
+            {
+                "name": "Run agent evaluation",
+                "type": "TridentNotebook",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.04:00:00",
+                    "retry": 1,
+                    "retryIntervalInSeconds": 120,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "notebookId": "{{NOTEBOOK_02_ID}}",
+                    "workspaceId": "{{WORKSPACE_ID}}"
+                }
+            }
+        ]
+    }
+}

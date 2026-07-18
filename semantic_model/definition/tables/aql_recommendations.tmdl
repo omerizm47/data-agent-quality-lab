@@ -1,0 +1,51 @@
+table aql_recommendations
+
+	measure 'Recommendations Logged' = COUNTROWS(aql_recommendations)
+		formatString: #,0
+
+	measure 'Affected Questions' = SUM(aql_recommendations[n_questions])
+		formatString: #,0
+
+	measure 'Agents Affected' = DISTINCTCOUNT(aql_recommendations[agent_name])
+		formatString: #,0
+
+	measure 'Latest Recommendation Date' = MAX(aql_recommendations[created_at])
+		formatString: yyyy-mm-dd hh:nn:ss
+
+	column run_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: run_id
+
+	column agent_name
+		dataType: string
+		summarizeBy: none
+		sourceColumn: agent_name
+
+	column diagnosis
+		dataType: string
+		summarizeBy: none
+		sourceColumn: diagnosis
+
+	column n_questions
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: n_questions
+
+	column recommendation
+		dataType: string
+		summarizeBy: none
+		sourceColumn: recommendation
+
+	column created_at
+		dataType: dateTime
+		formatString: yyyy-mm-dd hh:nn:ss
+		summarizeBy: none
+		sourceColumn: created_at
+
+	partition aql_recommendations = entity
+		mode: directLake
+		source
+			entityName: aql_recommendations
+			expressionSource: 'DirectLake - AgentQualityLab'
+

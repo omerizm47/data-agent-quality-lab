@@ -1,0 +1,97 @@
+table evaluation_output
+
+	measure 'Answers Evaluated' = COUNTROWS(evaluation_output)
+		formatString: #,0
+
+	measure 'Incorrect Answers' = CALCULATE(COUNTROWS(evaluation_output), evaluation_output[evaluation_judgement] = FALSE())
+		formatString: #,0
+
+	measure 'Unclear Answers' = CALCULATE(COUNTROWS(evaluation_output), ISBLANK(evaluation_output[evaluation_judgement]))
+		formatString: #,0
+
+	measure 'Avg Answer Latency (s)' = AVERAGE(evaluation_output[execution_time_sec])
+		formatString: 0.0
+
+	column id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: id
+
+	column evaluation_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: evaluation_id
+
+	column thread_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: thread_id
+
+	column run_timestamp
+		dataType: dateTime
+		formatString: yyyy-mm-dd hh:nn:ss
+		summarizeBy: none
+		sourceColumn: run_timestamp
+
+	column question
+		dataType: string
+		summarizeBy: none
+		sourceColumn: question
+
+	column expected_answer
+		dataType: string
+		summarizeBy: none
+		sourceColumn: expected_answer
+
+	column actual_answer
+		dataType: string
+		summarizeBy: none
+		sourceColumn: actual_answer
+
+	column execution_time_sec
+		dataType: double
+		summarizeBy: none
+		sourceColumn: execution_time_sec
+
+	column status
+		dataType: string
+		summarizeBy: none
+		sourceColumn: status
+
+	column thread_url
+		dataType: string
+		dataCategory: WebUrl
+		summarizeBy: none
+		sourceColumn: thread_url
+
+	column evaluation_judgement
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: evaluation_judgement
+
+	column evaluation_message
+		dataType: string
+		summarizeBy: none
+		sourceColumn: evaluation_message
+
+	column evaluation_status
+		dataType: string
+		summarizeBy: none
+		sourceColumn: evaluation_status
+
+	column data_agent_version
+		dataType: string
+		summarizeBy: none
+		sourceColumn: data_agent_version
+
+	column data_agent_last_updated
+		dataType: string
+		summarizeBy: none
+		sourceColumn: data_agent_last_updated
+
+	partition evaluation_output = entity
+		mode: directLake
+		source
+			entityName: evaluation_output
+			expressionSource: 'DirectLake - AgentQualityLab'
+

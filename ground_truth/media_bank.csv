@@ -1,0 +1,5 @@
+question,expected_answer,category,tags
+"How many content titles are in the catalog?","2000","counts","content"
+"Which genre has the most completed views?","Comedy (1,064 completed views)","grouped-top","viewing"
+"How many ad impressions were shown on Action content?","2109","relationship-count","ads"
+"How many subscribers are there in total?","10000","counts","subscribers"

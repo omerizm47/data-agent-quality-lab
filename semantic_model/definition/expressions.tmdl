@@ -1,0 +1,6 @@
+expression 'DirectLake - AgentQualityLab' =
+		let
+		    Source = AzureStorage.DataLake("https://onelake.dfs.fabric.microsoft.com/{{WORKSPACE_ID}}/{{DEFAULT_LAKEHOUSE_ID}}", [HierarchicalNavigation=true])
+		in
+		    Source
+
