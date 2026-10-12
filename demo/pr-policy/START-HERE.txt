@@ -1,0 +1,100 @@
+PR policy reviewer demonstration
+
+SCOPE
+This is an isolated hypothetical backend-only policy demo inside the Fabric
+data-agent lab. It is not the lab's normal development policy. Only PRs whose
+target branch is demo/pr-policy receive these checks. PRs targeting main are
+unaffected, including normal Python work in the Fabric lab.
+
+WHAT TO SHOW
+1. A PR adds demo/pr-policy/ui/dashboard.html and dashboard.css.
+2. The reviewer posts BLOCK, cites DEMO-002, and explains that UI changes are
+   outside the hypothetical backend-only scope.
+3. The required status "PR policy demo / file rules" fails and prevents merging
+   into demo/pr-policy once its ruleset is active.
+4. A Python PR fails DEMO-001.
+5. A permitted backend-only PR passes the file policy but is not auto-merged.
+
+COPILOT VERSUS THE MERGE GATE
+The custom pr-policy-reviewer agent and the path-scoped Copilot instructions
+explain the rules. The native GitHub Copilot reviewer can provide additional
+feedback when requested. An agent Markdown file does not automatically install
+that profile as the GitHub-hosted reviewer.
+
+The mandatory result comes from deterministic GitHub Actions automation.
+Its report is authored by github-actions[bot], not impersonated as Copilot.
+"Blocked" means a failing required status, not a formal REQUEST_CHANGES vote
+and not automatic closure of a PR. Natural-language guidance alone does not
+guarantee enforcement.
+
+LOCAL REHEARSAL
+From the repository root, run one command at a time:
+
+npm --prefix demo/pr-policy ci
+npm --prefix demo/pr-policy test
+npm --prefix demo/pr-policy run demo
+
+Individual cases:
+npm --prefix demo/pr-policy run demo -- ui
+npm --prefix demo/pr-policy run demo -- python
+npm --prefix demo/pr-policy run demo -- backend
+
+The three reports appear under demo/pr-policy/review-output. They are local
+fixture results, not hosted PR results. The HTTP integration test uses a local
+test server and makes no GitHub changes.
+
+PROMPT FOR COPILOT CLI
+Start Copilot at the repository root. Select pr-policy-reviewer with /agent.
+Then paste:
+
+Read demo/pr-policy/policy.json and demo/pr-policy/demo/scenarios.json. Review
+the ui scenario as a local rehearsal. Return BLOCK or PASS, exact rule IDs,
+affected files, the reason, and required remediation. Apply specific rules
+before the unknown-scope fallback. Do not edit files or publish anything.
+
+Repeat with python and backend to show the difference.
+
+GITHUB ACTIVATION, ONLY AFTER APPROVAL
+The trusted workflow and its implementation must first exist on main. Install
+the demo through a separately reviewed setup PR. This is necessary because
+pull_request_target runs the workflow from the trusted default branch, not
+from a contributor's PR.
+
+After that setup is approved and merged, create demo/pr-policy from the current
+main commit and apply demo/pr-policy/ruleset.json to that branch only. Confirm
+the ruleset is active, has no bypass actors, requires the exact status from
+GitHub Actions, and requires an up-to-date branch. Do not apply this ruleset to
+main. Do not modify other existing repository protections.
+
+Create the UI, Python, and backend demonstration PRs against demo/pr-policy,
+not main. Use the exact file paths and contents in demo/scenarios.json. The
+workflow runs on open and new commits, reads the complete changed-file list,
+and updates its bot report on the PR. Show Conversation, Files changed, the
+failed check, and the merge restriction.
+
+Create, update, push to, merge, or close each PR only with explicit approval.
+Never use an admin bypass or disable a failing rule during the demonstration.
+Native Copilot review requires the account's review entitlement and is a
+separate request. The strict file-policy check needs no AI token or PAT.
+
+TRUST AND LIMITS
+The workflow has narrow permissions, immutable action references, credential
+persistence disabled, and a trusted default-branch checkout. It never checks
+out, builds, installs, or executes PR head code. PR metadata is treated as data.
+Each status is bound to the reviewed head SHA. New commits require a new check.
+Incomplete file lists, stale revisions, and reporting errors do not pass.
+
+GitHub's Actions event policies may restrict pull_request_target, especially
+on public repositories. Check the actual repository policy before a live demo.
+If blocked, stop and use an approved integration; do not bypass the restriction.
+This sample does not implement merge-queue validation.
+
+The policy classifies declared paths, extensions, names, renames, and deletions.
+Unknown scopes fail closed. It is not a universal semantic detector of Python
+or UI code disguised in another allowed file. AI and human review complement it.
+
+OFFICIAL REFERENCES
+https://docs.github.com/en/actions/reference/security/securely-using-pull_request_target
+https://docs.github.com/en/rest/commits/statuses
+https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches
+https://docs.github.com/en/copilot/how-tos/use-copilot-agents/request-a-code-review/use-code-review

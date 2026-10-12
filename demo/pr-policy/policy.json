@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "targetBranch": "demo/pr-policy",
+  "checkName": "PR policy demo / file rules",
+  "rules": [
+    {
+      "id": "DEMO-001",
+      "name": "No Python",
+      "reason": "The isolated backend-only PR demo does not accept Python source, notebooks, or Python package configuration.",
+      "remediation": "Remove the Python change from this demonstration PR. Submit supported backend JavaScript or TypeScript instead.",
+      "extensions": [".py", ".pyw", ".pyi", ".pyx", ".pxd", ".pyo", ".pyc", ".ipynb"],
+      "fileNames": ["pyproject.toml", "pipfile", "pipfile.lock", "poetry.lock", "uv.lock", "setup.cfg", "tox.ini", ".python-version"],
+      "fileNamePatterns": ["^requirements(?:[-.][a-z0-9_-]+)?\\.(?:txt|in)$"],
+      "pathSegments": ["__pycache__", ".venv"]
+    },
+    {
+      "id": "DEMO-002",
+      "name": "No UI changes",
+      "reason": "UI work is outside this backend-only demonstration's scope, regardless of the PR title or justification.",
+      "remediation": "Remove the UI changes from this demonstration PR and submit them through the appropriate UI workflow.",
+      "extensions": [".html", ".htm", ".xhtml", ".css", ".scss", ".sass", ".less", ".jsx", ".tsx", ".vue", ".svelte", ".astro", ".svg", ".png", ".jpg", ".jpeg", ".gif", ".webp", ".ico", ".woff", ".woff2"],
+      "fileNames": ["angular.json", "next.config.js", "next.config.mjs", "next.config.ts", "vite.config.js", "vite.config.ts", "svelte.config.js", "astro.config.mjs"],
+      "fileNamePatterns": [],
+      "pathSegments": ["ui", "frontend", "front-end", "web", "client", "components", "pages", "views", "templates", "styles", "assets", "public"]
+    },
+    {
+      "id": "DEMO-003",
+      "name": "Protect the reviewer",
+      "reason": "A demonstration PR cannot change the policy, reviewer implementation, or workflow to exempt itself.",
+      "remediation": "Keep reviewer administration separate from demonstration PRs. Changes to the demo setup use the repository's normal main-branch workflow.",
+      "extensions": [],
+      "fileNames": ["agents.md", "package.json", "package-lock.json", "start-here.txt", ".gitignore", "policy.json", "ruleset.json"],
+      "fileNamePatterns": [],
+      "pathSegments": [".github", "scripts"]
+    }
+  ],
+  "allowedChanges": [
+    { "prefix": "demo/pr-policy/src/backend/", "extensions": [".js", ".mjs", ".cjs", ".ts", ".json"] },
+    { "prefix": "demo/pr-policy/test/backend/", "extensions": [".js", ".mjs", ".cjs", ".ts", ".json"] },
+    { "prefix": "demo/pr-policy/docs/", "extensions": [".md", ".txt"] }
+  ]
+}

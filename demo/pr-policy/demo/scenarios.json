@@ -1,0 +1,43 @@
+[
+  {
+    "id": "ui",
+    "title": "Add a portfolio dashboard",
+    "expectedDecision": "BLOCK",
+    "files": [
+      {
+        "filename": "demo/pr-policy/ui/dashboard.html",
+        "status": "added",
+        "content": "<!doctype html>\n<html lang=\"en\"><head><title>Portfolio dashboard</title></head><body><main><h1>Portfolio dashboard</h1><p>Synthetic training example.</p></main></body></html>\n"
+      },
+      {
+        "filename": "demo/pr-policy/ui/dashboard.css",
+        "status": "added",
+        "content": "body { font-family: sans-serif; margin: 2rem; }\n"
+      }
+    ]
+  },
+  {
+    "id": "python",
+    "title": "Add a Python exposure calculator",
+    "expectedDecision": "BLOCK",
+    "files": [
+      {
+        "filename": "demo/pr-policy/automation/exposure.py",
+        "status": "added",
+        "content": "def gross_exposure(exposures):\n    return sum(abs(exposure) for exposure in exposures)\n"
+      }
+    ]
+  },
+  {
+    "id": "backend",
+    "title": "Add backend exposure summary metadata",
+    "expectedDecision": "PASS",
+    "files": [
+      {
+        "filename": "demo/pr-policy/src/backend/summary.mjs",
+        "status": "added",
+        "content": "export function summarizeExposure(portfolio) {\n  return { netExposureEur: portfolio.netExposureEur, grossExposureEur: portfolio.grossExposureEur, synthetic: true };\n}\n"
+      }
+    ]
+  }
+]
